@@ -32,6 +32,8 @@ RAHMEN = "#dbe2ea"
 TEXT = "#0f172a"
 TEXT_GEDAEMPFT = "#64748b"
 TEXT_DEAKTIVIERT = "#94a3b8"
+#: Grund gesperrter Eingabefelder -- ohne ihn sehen sie aus wie bedienbare.
+FLAECHE_DEAKTIVIERT = "#f8fafc"
 
 #: Auswahlfarben fuer Popups (Dropdown-Liste, Kalender, Menues).
 AUSWAHL = "#2563eb"
@@ -123,6 +125,18 @@ QLineEdit, QComboBox, QDateEdit, QTextEdit, QPlainTextEdit, QSpinBox, QListWidge
     padding: 4px 6px;
     selection-background-color: {TEXTAUSWAHL};
     selection-color: {TEXT};
+}}
+/* Ohne diese Regel faerbt `QWidget {{ color }}` oben auch gesperrte Felder
+   voll durch -- sie wirken dann bedienbar, reagieren aber auf keinen Klick. */
+QLineEdit:disabled, QComboBox:disabled, QDateEdit:disabled, QTextEdit:disabled,
+QPlainTextEdit:disabled, QSpinBox:disabled, QListWidget:disabled,
+QCheckBox:disabled, QLabel:disabled {{
+    background: {FLAECHE_DEAKTIVIERT};
+    color: {TEXT_DEAKTIVIERT};
+    border-color: #e8edf3;
+}}
+QCheckBox:disabled, QLabel:disabled {{
+    background: transparent;
 }}
 QScrollArea {{
     border: none;

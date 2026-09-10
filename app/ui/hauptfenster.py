@@ -51,6 +51,7 @@ class Filterleiste(QFrame):
 
     def __init__(self, beim_aendern, parent: QWidget | None = None) -> None:
         super().__init__(parent)
+        self._beim_aendern = beim_aendern
         self.setProperty("rolle", "karte")
         layout = QHBoxLayout(self)
         layout.setContentsMargins(12, 8, 12, 8)
@@ -68,14 +69,15 @@ class Filterleiste(QFrame):
         self.status.currentIndexChanged.connect(beim_aendern)
 
         self.zeitraum_aktiv = QCheckBox("Zeitraum")
-        self.zeitraum_aktiv.toggled.connect(self._zeitraum_umschalten)
+        self.zeitraum_aktiv.setToolTip("Nach Bewerbungsdatum filtern")
         self.zeitraum_aktiv.toggled.connect(beim_aendern)
 
+        # Die Felder bleiben immer bedienbar: wer ein Datum waehlt, meint den
+        # Filter -- der Haken setzt sich dann selbst (siehe _datum_geaendert).
         self.von = datumsfeld(date.today() - timedelta(days=90))
         self.bis = datumsfeld(date.today())
         for feld in (self.von, self.bis):
-            feld.setEnabled(False)
-            feld.dateChanged.connect(beim_aendern)
+            feld.dateChanged.connect(self._datum_geaendert)
 
         zuruecksetzen = QPushButton("Zurücksetzen")
         zuruecksetzen.clicked.connect(self.zuruecksetzen)
@@ -89,9 +91,13 @@ class Filterleiste(QFrame):
         layout.addWidget(self.bis)
         layout.addWidget(zuruecksetzen)
 
-    def _zeitraum_umschalten(self, aktiv: bool) -> None:
-        self.von.setEnabled(aktiv)
-        self.bis.setEnabled(aktiv)
+    def _datum_geaendert(self) -> None:
+        """Datumswahl schaltet den Zeitraumfilter mit ein."""
+        if not self.zeitraum_aktiv.isChecked():
+            # setChecked loest ueber toggled bereits die Aktualisierung aus.
+            self.zeitraum_aktiv.setChecked(True)
+            return
+        self._beim_aendern()
 
     def zuruecksetzen(self) -> None:
         self.suche.clear()
