@@ -16,6 +16,7 @@ dist/
 *.db-journal
 *.sqlite3
 daten/
+Importe/
 
 # IDE / OS
 .vscode/

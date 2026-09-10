@@ -32,6 +32,8 @@ Markdown-Codefence, damit die Datei direkt einlesbar ist.
 > - `bewerbungsweg_hinweis`: wie beworben werden soll (Jobportal, E-Mail, Initiativbewerbung, Empfehlung), sonst `null`.
 > - Nichts erfinden – was nicht in der Anzeige steht, ist `null` bzw. eine leere Liste.
 >
+> Erstelle ein runterladbares .json oder leg das .json am ende in C:/dev/bewerbungstracker/Importe
+>
 > Stellenanzeige:
 > ```
 > [hier den Text oder Link einfügen]
