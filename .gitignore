@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# PyInstaller
+build/
+dist/
+*.spec.bak
+
+# Lokale Daten (die App speichert produktiv in %APPDATA%)
+*.db
+*.db-journal
+*.sqlite3
+daten/
+
+# IDE / OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
