@@ -7,6 +7,21 @@ häufigsten Absagegründe und JSON-Import aus einem KI-Chat.
 Umgesetzt nach [`docs/bewerbungstracker_spezifikation.md`](docs/bewerbungstracker_spezifikation.md).
 Stack: **Python 3.12 + PySide6 (Qt) + SQLite**, keine weiteren Laufzeit-Abhängigkeiten.
 
+### Dokumentation
+
+| Datei | Für wen |
+|---|---|
+| dieses README | Entwicklung: Aufsetzen, Tests, Build, Architektur |
+| [`docs/anleitung.md`](docs/anleitung.md) | **Endnutzer**, die nur die `.exe` bekommen |
+| [`docs/ki_prompts.md`](docs/ki_prompts.md) | Prompt-Vorlagen für den JSON-Import |
+| [`docs/bewerbungstracker_spezifikation.md`](docs/bewerbungstracker_spezifikation.md) | Ursprüngliche Anforderungen |
+
+> **Wer die Oberfläche ändert, pflegt bitte
+> [`docs/anleitung.md`](docs/anleitung.md) mit.** Sie beschreibt sichtbares
+> Verhalten – Menüs, Beschriftungen, Dialoge, Statusregeln, Standardwerte – und
+> geht an Leute, die nicht in den Code schauen können. Am Ende der Datei steht
+> eine Checkliste, welcher Abschnitt von welcher Änderung betroffen ist.
+
 ---
 
 ## Schnellstart
@@ -35,7 +50,7 @@ py -3.12 -m venv .venv
 .venv\Scripts\python.exe -m pytest -q
 ```
 
-28 Tests: Statusableitung, Reminder-Berechnung, CRUD, Filter, JSON-Import,
+29 Tests: Statusableitung, Reminder-Berechnung, CRUD, Filter, JSON-Import,
 CSV-Export und Smoke-Tests der Oberfläche (laufen offscreen, öffnen kein Fenster).
 
 ## Als .exe verpacken
@@ -46,6 +61,11 @@ CSV-Export und Smoke-Tests der Oberfläche (laufen offscreen, öffnen kein Fenst
 
 Ergebnis: `dist\bewerbungstracker.exe` – eine Datei, ohne Konsolenfenster, ohne
 installiertes Python auf dem Zielrechner.
+
+Wird die exe weitergegeben, gehört [`docs/anleitung.md`](docs/anleitung.md) dazu –
+und vorher ein Blick darauf, ob sie noch zum Stand der App passt. Sie erklärt
+unter anderem die SmartScreen-Warnung beim ersten Start, die sonst jeden
+Empfänger ausbremst (die exe ist nicht signiert).
 
 ---
 
@@ -162,7 +182,7 @@ app/
     charts.py              Ring- und Balkendiagramm (selbst gezeichnet)
     theme.py               Farben und Stylesheet
 tests/                     pytest-Suite (Logik + UI-Smoke-Tests)
-docs/                      Spezifikation und KI-Prompt-Vorlagen
+docs/                      Anleitung (Endnutzer), Spezifikation, KI-Prompts
 beispiel_importe/          Beispiel-JSONs für beide Import-Formate
 ```
 
