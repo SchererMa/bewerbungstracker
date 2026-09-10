@@ -6,8 +6,10 @@ import sqlite3
 from datetime import date
 
 from PySide6.QtCore import QDate, Qt
+from PySide6.QtGui import QColor, QTextCharFormat
 from PySide6.QtWidgets import (
     QButtonGroup,
+    QCalendarWidget,
     QCheckBox,
     QComboBox,
     QDateEdit,
@@ -41,6 +43,7 @@ from ..models import (
     InterviewRunde,
     Rueckmeldung,
 )
+from . import theme
 
 
 # --- Hilfsfunktionen ---------------------------------------------------------
@@ -63,7 +66,35 @@ def datumsfeld(wert: date | None = None) -> QDateEdit:
     feld.setCalendarPopup(True)
     feld.setDisplayFormat("dd.MM.yyyy")
     feld.setDate(zu_qdate(wert))
+    _kalender_gestalten(feld.calendarWidget())
     return feld
+
+
+def _kalender_gestalten(kalender: QCalendarWidget | None) -> None:
+    """Kalender-Popup lesbar machen: kein Gitter, gedaempftes Wochenende.
+
+    Qt faerbt Samstag und Sonntag per Voreinstellung knallrot -- zusammen mit
+    dem hellen Grund schlecht lesbar und ohne Bedeutung fuer diese App.
+    """
+    if kalender is None:
+        return
+    kalender.setGridVisible(False)
+    kalender.setVerticalHeaderFormat(QCalendarWidget.NoVerticalHeader)
+    kalender.setHorizontalHeaderFormat(QCalendarWidget.ShortDayNames)
+
+    kopfzeile = QTextCharFormat()
+    kopfzeile.setForeground(QColor(theme.TEXT_GEDAEMPFT))
+    kopfzeile.setFontWeight(600)
+    kalender.setHeaderTextFormat(kopfzeile)
+
+    werktag = QTextCharFormat()
+    werktag.setForeground(QColor(theme.TEXT))
+    wochenende = QTextCharFormat()
+    wochenende.setForeground(QColor(theme.TEXT_GEDAEMPFT))
+    for tag in (Qt.Monday, Qt.Tuesday, Qt.Wednesday, Qt.Thursday, Qt.Friday):
+        kalender.setWeekdayTextFormat(tag, werktag)
+    for tag in (Qt.Saturday, Qt.Sunday):
+        kalender.setWeekdayTextFormat(tag, wochenende)
 
 
 def _dateiauswahl(zeile: QLineEdit, titel: str, eltern: QWidget) -> None:

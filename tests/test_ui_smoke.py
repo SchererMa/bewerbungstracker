@@ -20,6 +20,7 @@ from app.models import Bewerbung, InterviewRunde, Rueckmeldung, Status  # noqa: 
 from app.ui.dialoge import BewerbungDialog, EinstellungenDialog  # noqa: E402
 from app.ui.hauptfenster import Hauptfenster  # noqa: E402
 from app.ui.import_dialog import ImportDialog  # noqa: E402
+from app.ui import theme  # noqa: E402
 
 
 @pytest.fixture(scope="session")
@@ -115,3 +116,30 @@ def test_import_dialog_zeigt_beide_formate(qapp, conn):
     for datei in sorted(ordner.glob("*.json")):
         dialog = ImportDialog(conn, datei)
         assert dialog.windowTitle() == "JSON-Import"
+
+
+def _helligkeit(farbe) -> float:
+    """Grobe Helligkeit 0..1 zur Kontrastpruefung."""
+    return (0.299 * farbe.red() + 0.587 * farbe.green() + 0.114 * farbe.blue()) / 255
+
+
+def test_theme_erzwingt_helle_palette(qapp):
+    """Ohne eigene Palette erben Popups im Windows-Dunkelmodus dunkle Farben.
+
+    Der Test schuetzt davor, dass die Palette wieder verloren geht -- dann
+    stuenden dunkler Stylesheet-Text auf dunklem Systemgrund.
+    """
+    from PySide6.QtGui import QPalette
+
+    theme.anwenden(qapp)
+    palette = qapp.palette()
+
+    grund = palette.color(QPalette.Base)
+    text = palette.color(QPalette.Text)
+    assert _helligkeit(grund) > 0.8, "Popup-Grund muss hell sein"
+    assert _helligkeit(text) < 0.3, "Text muss dunkel sein"
+    assert _helligkeit(grund) - _helligkeit(text) > 0.5, "Kontrast zu gering"
+
+    # Popups sind eigene Fenster -- sie brauchen zusaetzlich eigene Regeln.
+    for regel in ("QComboBox QAbstractItemView", "QCalendarWidget", "QMenu"):
+        assert regel in theme.STYLESHEET

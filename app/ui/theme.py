@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from PySide6.QtGui import QColor, QPalette
+
 from ..models import Status
 
 #: Akzentfarbe je Status -- verwendet in Kanban-Spalten, Karten und Diagrammen.
@@ -29,6 +31,45 @@ FLAECHE = "#ffffff"
 RAHMEN = "#dbe2ea"
 TEXT = "#0f172a"
 TEXT_GEDAEMPFT = "#64748b"
+TEXT_DEAKTIVIERT = "#94a3b8"
+
+#: Auswahlfarben fuer Popups (Dropdown-Liste, Kalender, Menues).
+AUSWAHL = "#2563eb"
+AUSWAHL_TEXT = "#ffffff"
+#: Hellere Auswahl fuer markierten Text in Eingabefeldern.
+TEXTAUSWAHL = "#bfdbfe"
+SCHWEBEN = "#eff6ff"
+
+
+def palette() -> QPalette:
+    """Feste helle Palette -- erst nach dem QApplication-Start aufrufen.
+
+    Ohne das erben Popups (QComboBox-Liste, QCalendarWidget, QMenu) unter
+    Windows im Dunkelmodus die dunkle Systempalette samt Systemakzentfarbe,
+    waehrend das Stylesheet die uebrigen Widgets hell haelt -- Ergebnis war
+    dunkler Text auf dunklem Grund.
+    """
+    p = QPalette()
+    p.setColor(QPalette.Window, QColor(HINTERGRUND))
+    p.setColor(QPalette.WindowText, QColor(TEXT))
+    p.setColor(QPalette.Base, QColor(FLAECHE))
+    p.setColor(QPalette.AlternateBase, QColor("#f8fafc"))
+    p.setColor(QPalette.Text, QColor(TEXT))
+    p.setColor(QPalette.PlaceholderText, QColor(TEXT_GEDAEMPFT))
+    p.setColor(QPalette.Button, QColor(FLAECHE))
+    p.setColor(QPalette.ButtonText, QColor(TEXT))
+    p.setColor(QPalette.BrightText, QColor("#ffffff"))
+    p.setColor(QPalette.ToolTipBase, QColor(FLAECHE))
+    p.setColor(QPalette.ToolTipText, QColor(TEXT))
+    p.setColor(QPalette.Highlight, QColor(AUSWAHL))
+    p.setColor(QPalette.HighlightedText, QColor(AUSWAHL_TEXT))
+    p.setColor(QPalette.Link, QColor(AUSWAHL))
+    p.setColor(QPalette.Mid, QColor(RAHMEN))
+    p.setColor(QPalette.Dark, QColor(TEXT_GEDAEMPFT))
+    for rolle in (QPalette.WindowText, QPalette.Text, QPalette.ButtonText):
+        p.setColor(QPalette.Disabled, rolle, QColor(TEXT_DEAKTIVIERT))
+    return p
+
 
 STYLESHEET = f"""
 QMainWindow, QDialog {{
@@ -80,7 +121,7 @@ QLineEdit, QComboBox, QDateEdit, QTextEdit, QPlainTextEdit, QSpinBox, QListWidge
     border: 1px solid {RAHMEN};
     border-radius: 6px;
     padding: 4px 6px;
-    selection-background-color: #bfdbfe;
+    selection-background-color: {TEXTAUSWAHL};
     selection-color: {TEXT};
 }}
 QScrollArea {{
@@ -100,4 +141,109 @@ QTabBar::tab:selected {{
     background: {FLAECHE};
     font-weight: 600;
 }}
+
+/* --- Popups: eigene Fenster, die sonst die Systempalette erben --- */
+/* Die Auswahlfarbe der Eingabefelder vererbt sich in die Popup-Liste und
+   uebersteuert eine hier gesetzte kraeftige Farbe -- deshalb bewusst
+   dieselbe helle Markierung mit dunklem Text. */
+QComboBox QAbstractItemView {{
+    background: {FLAECHE};
+    color: {TEXT};
+    border: 1px solid {RAHMEN};
+    border-radius: 6px;
+    padding: 4px;
+    outline: none;
+    selection-background-color: {TEXTAUSWAHL};
+    selection-color: {TEXT};
+}}
+QComboBox QAbstractItemView::item {{
+    min-height: 26px;
+    padding: 2px 8px;
+    border-radius: 4px;
+}}
+QComboBox QAbstractItemView::item:hover {{
+    background: {SCHWEBEN};
+    color: {TEXT};
+}}
+QComboBox QAbstractItemView::item:selected {{
+    background: {TEXTAUSWAHL};
+    color: {TEXT};
+}}
+QMenu {{
+    background: {FLAECHE};
+    color: {TEXT};
+    border: 1px solid {RAHMEN};
+    border-radius: 8px;
+    padding: 4px;
+}}
+QMenu::item {{
+    padding: 6px 24px 6px 12px;
+    border-radius: 4px;
+}}
+QMenu::item:selected {{
+    background: {AUSWAHL};
+    color: {AUSWAHL_TEXT};
+}}
+QMenu::item:disabled {{
+    color: {TEXT_DEAKTIVIERT};
+}}
+QMenu::separator {{
+    height: 1px;
+    background: {RAHMEN};
+    margin: 4px 8px;
+}}
+QToolTip {{
+    background: {FLAECHE};
+    color: {TEXT};
+    border: 1px solid {RAHMEN};
+    padding: 4px 6px;
+}}
+
+/* --- Kalender-Popup der Datumsfelder --- */
+QCalendarWidget QWidget {{
+    background: {FLAECHE};
+    color: {TEXT};
+}}
+QCalendarWidget QWidget#qt_calendar_navigationbar {{
+    background: {HINTERGRUND};
+    border-bottom: 1px solid {RAHMEN};
+}}
+QCalendarWidget QToolButton {{
+    background: transparent;
+    color: {TEXT};
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 10px;
+    margin: 2px;
+}}
+QCalendarWidget QToolButton:hover {{
+    background: {SCHWEBEN};
+}}
+QCalendarWidget QSpinBox {{
+    background: {FLAECHE};
+    color: {TEXT};
+    border: 1px solid {RAHMEN};
+    border-radius: 4px;
+}}
+QCalendarWidget QAbstractItemView {{
+    background: {FLAECHE};
+    color: {TEXT};
+    outline: none;
+    selection-background-color: {AUSWAHL};
+    selection-color: {AUSWAHL_TEXT};
+}}
+QCalendarWidget QAbstractItemView:enabled {{
+    color: {TEXT};
+}}
+QCalendarWidget QAbstractItemView:disabled {{
+    color: {TEXT_DEAKTIVIERT};
+}}
 """
+
+
+def anwenden(anwendung) -> None:
+    """Stil, Palette und Stylesheet in der richtigen Reihenfolge setzen."""
+    anwendung.setStyle("Fusion")
+    anwendung.setPalette(palette())
+    anwendung.setStyleSheet(STYLESHEET)

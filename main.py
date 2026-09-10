@@ -16,8 +16,7 @@ def main() -> int:
     anwendung.setApplicationName("Bewerbungstracker")
     anwendung.setApplicationVersion(__version__)
     anwendung.setOrganizationName("Bewerbungstracker")
-    anwendung.setStyle("Fusion")
-    anwendung.setStyleSheet(theme.STYLESHEET)
+    theme.anwenden(anwendung)
 
     conn = database.verbinden()
     fenster = Hauptfenster(conn)
