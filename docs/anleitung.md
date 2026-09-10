@@ -14,6 +14,11 @@ Wo stehe ich gerade, wo sollte ich nachfassen, und woran ist es zuletzt gescheit
 Es braucht kein installiertes Python und keine Internetverbindung. Alle Daten
 bleiben auf dem eigenen Rechner.
 
+> **Auf einem Mac?** Die Abschnitte 1 bis 11 beschreiben die Windows-Version.
+> Die App läuft auch auf macOS, wird dort aber anders gestartet – wie, steht in
+> [Abschnitt 12](#12-nutzung-auf-einem-mac). Alles zur Bedienung gilt
+> unverändert.
+
 ---
 
 ## 1. Starten
@@ -313,6 +318,101 @@ Bewerbungsdatum stimmt.
 
 ---
 
+## 12. Nutzung auf einem Mac
+
+Die `bewerbungstracker.exe` ist ein reines Windows-Programm. Auf einem Mac
+lässt sie sich nicht starten – auch nicht durch Doppelklick oder Umbenennen.
+Ein fertiges Mac-Programm zum Doppelklicken gibt es derzeit nicht.
+
+Die App selbst läuft aber problemlos unter macOS: Sie ist plattformunabhängig
+geschrieben, es fehlt nur die Verpackung. Der Weg führt deshalb über den
+Quellcode – einmal einrichten, danach mit einem Doppelklick starten.
+
+### Was gebraucht wird
+
+* macOS auf Intel oder Apple Silicon – beides funktioniert.
+* **Python 3.12** von [python.org](https://www.python.org/downloads/).
+  Das bei macOS mitgelieferte Python ist älter und sollte unangetastet bleiben.
+* Den Projektordner als ZIP (nicht die `.exe`).
+
+### Einmalig einrichten
+
+ZIP entpacken, dann **Terminal** öffnen (Spotlight mit `Cmd + Leertaste`,
+„Terminal" eingeben) und eingeben – Pfad an den eigenen Ordner anpassen:
+
+```
+cd ~/Downloads/bewerbungstracker
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Der letzte Schritt lädt einmalig die Oberflächen-Bibliothek herunter und dauert
+ein bis zwei Minuten.
+
+### Starten
+
+```
+cd ~/Downloads/bewerbungstracker
+source .venv/bin/activate
+python main.py
+```
+
+### Bequemer: Startdatei zum Doppelklicken
+
+Damit das Tippen entfällt, im Projektordner eine Datei `start.command` mit
+diesem Inhalt anlegen:
+
+```
+#!/bin/bash
+cd "$(dirname "$0")"
+source .venv/bin/activate
+python main.py
+```
+
+Danach einmal im Terminal freischalten:
+
+```
+chmod +x ~/Downloads/bewerbungstracker/start.command
+```
+
+Ab da startet ein Doppelklick auf `start.command` die App. Beim ersten Mal
+fragt macOS eventuell nach – dann Rechtsklick auf die Datei und *Öffnen*
+wählen, das bestätigt sie dauerhaft.
+
+### Unterschiede zur Windows-Version
+
+Die Bedienung ist identisch – Board, Status-Logik, Import, Einstellungen und
+Export verhalten sich exakt wie in den Abschnitten 2 bis 8 beschrieben. Anders
+sind nur drei Dinge:
+
+| | Windows | macOS |
+|---|---|---|
+| Tastenkürzel | `Strg + N`, `Strg + I` | `Cmd + N`, `Cmd + I` |
+| Ansicht aktualisieren | `F5` | `F5` (je nach Tastatur `Fn + F5`) |
+| Datenbank | `%APPDATA%\Bewerbungstracker\` | `~/Bewerbungstracker/` |
+
+Die Warnung aus Abschnitt 1 entfällt: SmartScreen gibt es auf dem Mac nicht.
+Das Backup funktioniert genauso – die eine Datei `bewerbungstracker.db` aus dem
+Ordner `~/Bewerbungstracker/` kopieren. Im Finder erreichbar über *Gehe zu →
+Gehe zum Ordner…* und dort `~/Bewerbungstracker` eingeben.
+
+### Und ein richtiges Mac-Programm?
+
+Technisch möglich, aber deutlich aufwändiger, und zwar aus zwei Gründen:
+
+1. Das Verpackungswerkzeug muss **auf einem Mac** laufen – von Windows aus lässt
+   sich kein Mac-Programm erzeugen.
+2. macOS stellt Programme aus unbekannter Quelle unter Quarantäne und meldet
+   dabei sinngemäß, die Datei sei *beschädigt*. Das klingt nach einem Defekt,
+   liegt aber nur an der fehlenden Signatur. Sauber beheben lässt sich das nur
+   mit einem kostenpflichtigen Apple-Entwicklerkonto.
+
+Für einzelne Nutzer lohnt dieser Aufwand selten – der Start über die
+`start.command` oben leistet dasselbe.
+
+---
+
 <!--
   WARTUNGS-CHECKLISTE
   Diese Anleitung beschreibt die Oberfläche aus Endnutzersicht. Nach Änderungen
@@ -325,6 +425,8 @@ Bewerbungsdatum stimmt.
   - JSON-Importformate (Felder, Kategorien-Katalog) ... Abschnitt 6
     -> muss deckungsgleich mit docs/ki_prompts.md bleiben
   - Einstellungen inkl. Standardwerten ................ Abschnitt 7
-  - Speicherort der Datenbank ........................ Abschnitt 9
-  - Tastenkürzel ..................................... Abschnitt 10
+  - Speicherort der Datenbank ........................ Abschnitte 9 und 12
+  - Tastenkürzel ..................................... Abschnitte 10 und 12
+  - requirements.txt / Python-Version ................ Abschnitt 12
+    -> dort stehen die Einrichtungsbefehle für macOS
 -->
